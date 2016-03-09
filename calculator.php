@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <title>Calculo</title>
 
-    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
 </head>
 <body>
 <form action="/" method="post">
 
     <div class="container">
-        <div class="panel panel-default">
-            <div class="panel-header">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
                 <h1>Calculo</h1>
             </div>
             <div class="panel-body">
@@ -24,7 +24,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <button id='clearall' type='button'>CA</button>
+                            <button id='clear-all' type='button'>CA</button>
                         </td>
                         <td>
                             <button id='clear' type='button'>C</button>
@@ -95,5 +95,6 @@
         </div>
     </div>
 
+    <script src="js/scripts.js"></script>
 </body>
 </html>
