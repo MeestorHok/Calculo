@@ -13,8 +13,8 @@ TestCase("Evaluate Function", {
   },
   "test f(x) 3" : function () {
     assertEquals(
-      Calculator.f('(x-4)^2+7*x/5+4*(x-3)', 10),
-      22
+      Calculator.f('(x-4)+7*x/5+4*(x-3)', 10),
+      48
     );
   }
 });
