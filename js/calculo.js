@@ -5,15 +5,13 @@
   Calculator = new (function () {
     var self = this,
       evaluate = (function () {
-        function tokenize(str) {
-          return str.match(/\d+\.?\d*|[a-zA-Z]+|\S/g);
-        }
-
-        function substitute(rpn, value) {
-          while (rpn.indexOf('x') !== -1) {
-            rpn[rpn.indexOf('x')] = Number(value);
-          }
-          return rpn;
+        function tokenize(str, value) {
+          return str.replace(/(\w+\^\w+)/g, '($1)')  // -x^2 => -(x^2)
+                      .replace(/(\-\((.+)\))/g, '-1*($2)')  // -(5+4) => -1*(5+4)
+                        .replace(/(\-\w+)/g, '+$1')  // 5-x+4 => 5 + -x + 4
+                          .replace(/(([\d\.]+)([a-zA-Z]+))/g, '$2*$3')  // 5x => 5*x
+                            .replace(/x/g, value)  // 5*x => 5*4
+                              .match(/(-\w+)|([\w\.]+)|([\(\)\+\^\*\/\-])/g);  // properly tokens the remaining string
         }
 
         function isNumeric(token) {
@@ -44,14 +42,7 @@
             ans = a / b;
             break;
           case '^':
-            ans = (function (a, b) {
-              var num = a;
-              while (b > 1) {
-                num *= a;
-                b -= 1;
-              }
-              return num;
-            }(a, b));
+            ans = Math.pow(a, b);
             break;
           default:
             break;
@@ -143,10 +134,7 @@
 
         return function (expression, value) {
           value = value || 0;
-          var infix = tokenize(expression),
-            rpn = substitute(shuntingYard(infix), value);
-
-          return solve(rpn);
+          return solve(shuntingYard(tokenize(expression, value)));  // solve the reverse polish notation of the tokened infix expression
         };
       }());
 

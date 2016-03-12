@@ -13,8 +13,14 @@ TestCase("Evaluate Function", {
   },
   "test f(x) 3" : function () {
     assertEquals(
-      Calculator.f('(x-4)+7*x/5+4*(x-3)', 10),
+      Calculator.f('(x-4)+7x/5+4*(x-3)', 10),
       48
+    );
+  },
+  "test f(x) 4" : function () {
+    assertEquals(
+      Calculator.f('x^3-x^2+4x-5', 5),
+      115
     );
   }
 });
@@ -26,9 +32,9 @@ TestCase("Derivative", {
       13
     );
   },
-  "test df(x) 2" : function () {
+  "test df(x) 3" : function () {
     assertEquals(
-      Calculator.df('x^3-x^2+4*x-5', 5),
+      Calculator.df('x^3-x^2+4x-5', 5),
       69
     );
   }
