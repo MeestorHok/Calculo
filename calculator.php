@@ -95,6 +95,6 @@
         </div>
     </div>
 
-    <script src="js/scripts.js"></script>
+    <script src="js/calculo.js"></script>
 </body>
 </html>
