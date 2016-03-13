@@ -128,7 +128,6 @@
               stack.push(performOperation(a, b, equation.shift()));
             }
           }
-
           return stack[0];
         }
 
@@ -138,22 +137,45 @@
         };
       }());
 
+    self.truncate = function (num) {
+      return Math.trunc(num * 1000) / 1000;
+    };
+
     self.f = function (func, x) {
       return evaluate(func, x);
     };
 
     self.df = function (func, x) {
-      var h = 0.0001;
-      return Math.round((self.f(func, x + h) - self.f(func, x)) / h);
+      var h = 0.0000001;
+      return (self.f(func, x + h) - self.f(func, x)) / h;
     };
 
     self.newtonsMethod = function (func, guess) {
       var tmp = 0;
-      while (Math.abs(guess - tmp) > 0.00001) {
+      while (Math.abs(guess - tmp) > 0.0000001) {
         tmp = guess;
         guess = guess - (self.f(func, guess) / self.df(func, guess));
       }
       return guess;
+    };
+
+    self.integral = function (func, beginning, end) {
+      var width = (end - beginning) / 1000,
+        point,
+        height,
+        multiplierToggle = 0,
+        integral = 0;
+
+      for (point = beginning; point <= end; point += width) {
+        height = self.f(func, point);
+        if (point === beginning || point === end) {
+          integral += height;
+        } else {
+          multiplierToggle = !multiplierToggle;
+          integral += height * (multiplierToggle + 1) * 2.0;
+        }
+      }
+      return integral * (width / 3.0);
     };
 
     return self;
