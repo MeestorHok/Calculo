@@ -4,7 +4,20 @@
   var Calculator;
   Calculator = new (function () {
     var self = this,
+      /**
+       * Self-contained evaluate function
+       * 
+       * @type {function}
+       */
       evaluate = (function () {
+        
+        /**
+         * Tokenizes the equation so that the shunting yard algorithm can understand it
+         * 
+         * @param {string} str String format of the equation to be tokenized
+         * @param {number} value Value to plug in for 'x'
+         * @return {string} Infix Notation of the string, now ready for the shunting yard algorithm
+         */
         function tokenize(str, value) {
           return str.replace(/(\w+\^\w+)/g, '($1)')  // -x^2 => -(x^2)
                       .replace(/(\-\((.+)\))/g, '-1*($2)')  // -(5+4) => -1*(5+4)
@@ -13,19 +26,45 @@
                             .replace(/x/g, value)  // 5*x => 5*4
                               .match(/(-\w+)|([\w\.]+)|([\(\)\+\^\*\/\-])/g);  // properly tokens the remaining string
         }
-
+        
+        /**
+         * Checks if given token is a number
+         * 
+         * @param {string} token String that might be a number
+         * @return {boolean} True if the token is a number
+         */
         function isNumeric(token) {
           return !!(!isNaN(token) && isFinite(token));
         }
-
+        
+        /**
+         * Checks if given token is an alphabetic letter
+         * 
+         * @param {string} token String that might be a letter
+         * @return {boolean} True if token is a letter
+         */
         function isLetter(token) {
           return 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(token) !== -1;
         }
-
+        
+        /**
+         * Checks if given token is an arithmetic operation (+, -, /, *)
+         * 
+         * @param {string} token String that might be an operation
+         * @return {boolean} True if token is an operation
+         */
         function isOperator(token) {
           return '^*/+-'.indexOf(token) !== -1;
         }
-
+        
+        /**
+         * Performs a single operation on two numbers and returns the result
+         * 
+         * @param {number} a First number
+         * @param {number} b Second number
+         * @param {string} operation Operation to be executed
+         * @return {number} Result of the operation
+         */
         function performOperation(a, b, operation) {
           var ans = 0;
           switch (operation) {
@@ -49,7 +88,14 @@
           }
           return ans;
         }
-
+        
+        /**
+         * The Shunting Yard Algorithm converts infix notation to reverse-polish notation
+         *     that the the computer can solve.
+         * 
+         * @param {string} infix Infix notation of the equation
+         * @return {array} Reverse Polish notation of the equation
+         */
         function shuntingYard(infix) {
           var stack = [],
             queue = [],
@@ -115,7 +161,14 @@
 
           return queue;
         }
-
+        
+        /**
+         * Evaluates the Reverse Polish equation piece-by-piece and returns the answer
+         *     to the entire equation.
+         * 
+         * @param {array} equation Reverse Polish notation of the given equation to solve
+         * @return {number} Answer to the entire equation
+         */
         function solve(equation) {
           var a, b, stack = [];
 
@@ -130,26 +183,59 @@
           }
           return stack[0];
         }
-
+        
+        /**
+         * Returns the answer to the user after solving the equation
+         * 
+         * @param {string} expression Infix notation of the equation to be solved
+         * @param {value} value Point to evaluate the expression at
+         * @return {number} Answer to the equation
+         */
         return function (expression, value) {
           value = value || 0;
           return solve(shuntingYard(tokenize(expression, value)));  // solve the reverse polish notation of the tokened infix expression
         };
       }());
-
+    /**
+     * Truncates a decimal at 3 places
+     * 
+     * @param {number} num Number with a long decimal
+     * @return {number} Number with a 3 digit decimal
+     */
     self.truncate = function (num) {
       return Math.trunc(num * 1000) / 1000;
     };
-
+    
+    /**
+     * Evaluates a the given function at a point
+     * 
+     * @param {string} func Infix notation of the equation
+     * @param {number} x Point to evaluate the expression at
+     * @return {number} Answer to the equation
+     */
     self.f = function (func, x) {
       return evaluate(func, x);
     };
-
+    
+    /**
+     * Calculates the derivative (slope) of the given function at a point
+     * 
+     * @param {string} func Infix notation of the equation to find the direvative of
+     * @param {number} x Point to evaluate the derivative at
+     * @return {number} Derivative of the function at the given point
+     */
     self.df = function (func, x) {
       var h = 0.0000001;
       return (self.f(func, x + h) - self.f(func, x)) / h;
     };
-
+    
+    /**
+     * Finds the nearest x-intercept of the given function to the given point
+     * 
+     * @param {string} func Infix notation of the equation
+     * @param {number} guess Finds the x-intercept closest to this point
+     * @return {number} The x value of the x-intercept closest to the guess
+     */
     self.newtonsMethod = function (func, guess) {
       var tmp = 0;
       while (Math.abs(guess - tmp) > 0.0000001) {
@@ -158,7 +244,15 @@
       }
       return guess;
     };
-
+    
+    /**
+     * Calculates the integral of a function between two points
+     * 
+     * @param {string} func Infix notation of the equation to find the integral of
+     * @param {number} beginning Left bound of the integral
+     * @param {number} end Right bound of the integral
+     * @return {number} Integral of the function between the given points
+     */
     self.integral = function (func, beginning, end) {
       var width = (end - beginning) / 1000,
         point,
