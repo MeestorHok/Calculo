@@ -16,12 +16,12 @@
          * 
          * @param {string} str String format of the equation to be tokenized
          * @param {number} value Value to plug in for 'x'
-         * @return {string} Infix Notation of the string, now ready for the shunting yard algorithm
+         * @returns {string} Infix Notation of the string, now ready for the shunting yard algorithm
          */
         function tokenize(str, value) {
           return str.replace(/(\w+\^\w+)/g, '($1)') // -x^2 => -(x^2)
                       .replace(/(\-\((.+)\))/g, '-1*($2)') // -(5+4) => -1*(5+4)
-                        .replace(/(\w+\-\w+)/g, '+$1') // 5-x+4 => 5 + -x + 4
+                        .replace(/(\-\w+)/g, '+$1') // 5-x+4 => 5 + -x + 4
                           .replace(/(([\d\.]+)([a-zA-Z]+))/g, '$2*$3') // 5x => 5*x
                             .replace(/x/g, value) // 5*x => 5*4
                               .match(/(-\w+)|([\w\.]+)|([\(\)\+\^\*\/\-])/g);  // properly tokens the remaining string
@@ -31,7 +31,7 @@
          * Checks if given token is a number
          * 
          * @param {string} token String that might be a number
-         * @return {boolean} True if the token is a number
+         * @returns {boolean} True if the token is a number
          */
         function isNumeric(token) {
           return !!(!isNaN(token) && isFinite(token));
@@ -41,7 +41,7 @@
          * Checks if given token is an alphabetic letter
          * 
          * @param {string} token String that might be a letter
-         * @return {boolean} True if token is a letter
+         * @returns {boolean} True if token is a letter
          */
         function isLetter(token) {
           return 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(token) !== -1;
@@ -51,7 +51,7 @@
          * Checks if given token is an arithmetic operation (+, -, /, *)
          * 
          * @param {string} token String that might be an operation
-         * @return {boolean} True if token is an operation
+         * @returns {boolean} True if token is an operation
          */
         function isOperator(token) {
           return '^*/+-'.indexOf(token) !== -1;
@@ -63,7 +63,7 @@
          * @param {number} a First number
          * @param {number} b Second number
          * @param {string} operation Operation to be executed
-         * @return {number} Result of the operation
+         * @returns {number} Result of the operation
          */
         function performOperation(a, b, operation) {
           var ans = 0;
@@ -94,7 +94,7 @@
          *     that the the computer can solve.
          * 
          * @param {string} infix Infix notation of the equation
-         * @return {Array} Reverse Polish notation of the equation
+         * @returns {Array} Reverse Polish notation of the equation
          */
         function shuntingYard(infix) {
           var stack = [],
@@ -167,7 +167,7 @@
          *     to the entire equation.
          * 
          * @param {Array} equation Reverse Polish notation of the given equation to solve
-         * @return {number} Answer to the entire equation
+         * @returns {number} Answer to the entire equation
          */
         function solve(equation) {
           var a, b, stack = [];
@@ -189,7 +189,7 @@
          * 
          * @param {string} expression Infix notation of the equation to be solved
          * @param {value} value Point to evaluate the expression at
-         * @return {number} Answer to the equation
+         * @returns {number} Answer to the equation
          */
         return function (expression, value) {
           value = value || 0;
@@ -200,7 +200,7 @@
      * Truncates a decimal at 3 places
      * 
      * @param {number} num Number with a long decimal
-     * @return {number} Number with a 3 digit decimal
+     * @returns {number} Number with a 3 digit decimal
      */
     self.truncate = function (num) {
       return Math.trunc(num * 1000) / 1000;
@@ -211,7 +211,7 @@
      * 
      * @param {string} func Infix notation of the equation
      * @param {number} x Point to evaluate the expression at
-     * @return {number} Answer to the equation
+     * @returns {number} Answer to the equation
      */
     self.f = function (func, x) {
       return evaluate(func, x);
@@ -222,7 +222,7 @@
      * 
      * @param {string} func Infix notation of the equation to find the direvative of
      * @param {number} x Point to evaluate the derivative at
-     * @return {number} Derivative of the function at the given point
+     * @returns {number} Derivative of the function at the given point
      */
     self.df = function (func, x) {
       var h = 0.0000001;
@@ -234,7 +234,7 @@
      * 
      * @param {string} func Infix notation of the equation
      * @param {number} guess Finds the x-intercept closest to this point
-     * @return {number} The x value of the x-intercept closest to the guess
+     * @returns {number} The x value of the x-intercept closest to the guess
      */
     self.newtonsMethod = function (func, guess) {
       var tmp = 0;
@@ -251,7 +251,7 @@
      * @param {string} func Infix notation of the equation to find the integral of
      * @param {number} beginning Left bound of the integral
      * @param {number} end Right bound of the integral
-     * @return {number} Integral of the function between the given points
+     * @returns {number} Integral of the function between the given points
      */
     self.integral = function (func, beginning, end) {
       var width = (end - beginning) / 1000,
@@ -294,6 +294,43 @@
       }
 
       return intersections;
+    };
+
+    /**
+     * Calculates the area between two functions
+     *
+     * @param {string} func1 First function
+     * @param {string} func2 Second function
+     * @param {number} a Left bound
+     * @param {number} b Right bound
+     * @returns {number} Area between functions
+     */
+    self.areaBetween = function (func1, func2, a, b) {
+      var area = 0,
+        intersections,
+        integral,
+        right,
+        left = a;
+
+      intersections = self.getIntersections(func1, func2, a, b);
+
+      integral = function (iFunc1, iFunc2, iA, iB) {
+        var x = (iB - iA) / 2;
+        return (self.f(iFunc1, x) > self.f(iFunc2, x)) ? // discover which is on top
+                  self.integral(iFunc1, iA, iB) - self.integral(iFunc2, iA, iB) : // first function on top
+                    self.integral(iFunc2, iA, iB) - self.integral(iFunc1, iA, iB); // second function on top
+      };
+
+      while (intersections.length > 0) {
+        right = intersections.shift();
+        area += integral(func1, func2, left, right);
+        left = right;
+      }
+      right = b;
+
+      area += integral(func1, func2, left, right);
+
+      return area;
     };
 
     return self;

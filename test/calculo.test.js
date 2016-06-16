@@ -79,8 +79,17 @@ TestCase("Integral", {
 TestCase("Intersections", {
   "test intersections(func, func, a, b) 1" : function () {
     assertEquals(
-      Calculator.getIntersections('x^2*.07', '-(x-3)^2+2', 0, 5),
+      Calculator.getIntersections('x^2*.07', '-1*((x-3)^2)+2', 0, 5),
       [1.655, 3.952]
+    );
+  }
+});
+
+TestCase("Area Between", {
+  "test areaBetween(func, func, a, b) 1" : function () {
+    assertEquals(
+      Calculator.areaBetween('x^2', '-x^2+2', -1, 1),
+      4
     );
   }
 });
