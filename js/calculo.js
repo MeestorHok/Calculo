@@ -10,7 +10,7 @@
        * @type {function}
        */
       evaluate = (function () {
-        
+
         /**
          * Tokenizes the equation so that the shunting yard algorithm can understand it
          * 
@@ -19,14 +19,14 @@
          * @return {string} Infix Notation of the string, now ready for the shunting yard algorithm
          */
         function tokenize(str, value) {
-          return str.replace(/(\w+\^\w+)/g, '($1)')  // -x^2 => -(x^2)
-                      .replace(/(\-\((.+)\))/g, '-1*($2)')  // -(5+4) => -1*(5+4)
-                        .replace(/(\-\w+)/g, '+$1')  // 5-x+4 => 5 + -x + 4
-                          .replace(/(([\d\.]+)([a-zA-Z]+))/g, '$2*$3')  // 5x => 5*x
-                            .replace(/x/g, value)  // 5*x => 5*4
+          return str.replace(/(\w+\^\w+)/g, '($1)') // -x^2 => -(x^2)
+                      .replace(/(\-\((.+)\))/g, '-1*($2)') // -(5+4) => -1*(5+4)
+                        .replace(/(\w+\-\w+)/g, '+$1') // 5-x+4 => 5 + -x + 4
+                          .replace(/(([\d\.]+)([a-zA-Z]+))/g, '$2*$3') // 5x => 5*x
+                            .replace(/x/g, value) // 5*x => 5*4
                               .match(/(-\w+)|([\w\.]+)|([\(\)\+\^\*\/\-])/g);  // properly tokens the remaining string
         }
-        
+
         /**
          * Checks if given token is a number
          * 
@@ -36,7 +36,7 @@
         function isNumeric(token) {
           return !!(!isNaN(token) && isFinite(token));
         }
-        
+
         /**
          * Checks if given token is an alphabetic letter
          * 
@@ -46,7 +46,7 @@
         function isLetter(token) {
           return 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(token) !== -1;
         }
-        
+
         /**
          * Checks if given token is an arithmetic operation (+, -, /, *)
          * 
@@ -56,7 +56,7 @@
         function isOperator(token) {
           return '^*/+-'.indexOf(token) !== -1;
         }
-        
+
         /**
          * Performs a single operation on two numbers and returns the result
          * 
@@ -88,13 +88,13 @@
           }
           return ans;
         }
-        
+
         /**
          * The Shunting Yard Algorithm converts infix notation to reverse-polish notation
          *     that the the computer can solve.
          * 
          * @param {string} infix Infix notation of the equation
-         * @return {array} Reverse Polish notation of the equation
+         * @return {Array} Reverse Polish notation of the equation
          */
         function shuntingYard(infix) {
           var stack = [],
@@ -161,12 +161,12 @@
 
           return queue;
         }
-        
+
         /**
          * Evaluates the Reverse Polish equation piece-by-piece and returns the answer
          *     to the entire equation.
          * 
-         * @param {array} equation Reverse Polish notation of the given equation to solve
+         * @param {Array} equation Reverse Polish notation of the given equation to solve
          * @return {number} Answer to the entire equation
          */
         function solve(equation) {
@@ -183,7 +183,7 @@
           }
           return stack[0];
         }
-        
+
         /**
          * Returns the answer to the user after solving the equation
          * 
@@ -205,7 +205,7 @@
     self.truncate = function (num) {
       return Math.trunc(num * 1000) / 1000;
     };
-    
+
     /**
      * Evaluates a the given function at a point
      * 
@@ -216,7 +216,7 @@
     self.f = function (func, x) {
       return evaluate(func, x);
     };
-    
+
     /**
      * Calculates the derivative (slope) of the given function at a point
      * 
@@ -228,7 +228,7 @@
       var h = 0.0000001;
       return (self.f(func, x + h) - self.f(func, x)) / h;
     };
-    
+
     /**
      * Finds the nearest x-intercept of the given function to the given point
      * 
@@ -244,7 +244,7 @@
       }
       return guess;
     };
-    
+
     /**
      * Calculates the integral of a function between two points
      * 
@@ -270,6 +270,30 @@
         }
       }
       return integral * (width / 3.0);
+    };
+
+    /**
+     * Gets all of the intersections of two functions
+     *
+     * @param {string} func1 First function
+     * @param {string} func2 Second function
+     * @param {number} a Left bound to search for intersects
+     * @param {number} b Right bound to search for intersects
+     * @returns {Array} List of all intersection points
+     */
+    self.getIntersections = function (func1, func2, a, b) {
+      var intersections = [],
+        x = a;
+      while (x <= b) {
+        if (intersections.indexOf(x) === -1) {
+          if (Math.abs(self.f(func1, x) - self.f(func2, x)) <= 0.0001) {
+            intersections.push(self.truncate(x));
+          }
+        }
+        x += 0.0001;
+      }
+
+      return intersections;
     };
 
     return self;

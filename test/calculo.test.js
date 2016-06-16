@@ -22,6 +22,12 @@ TestCase("Evaluate Function", {
       Calculator.truncate(Calculator.f('x^3-x^2+4x-5', 5)),
       115
     );
+  },
+  "test f(x) 5" : function () {
+    assertEquals(
+      Calculator.truncate(Calculator.f('5*.2')),
+      1
+    );
   }
 });
 
@@ -66,6 +72,15 @@ TestCase("Integral", {
     assertEquals(
       Calculator.truncate(Calculator.integral('x^2+3x-4', 0, 5)),
       59.226
+    );
+  }
+});
+
+TestCase("Intersections", {
+  "test intersections(func, func, a, b) 1" : function () {
+    assertEquals(
+      Calculator.getIntersections('x^2*.07', '-(x-3)^2+2', 0, 5),
+      [1.655, 3.952]
     );
   }
 });
