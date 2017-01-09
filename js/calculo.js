@@ -4,198 +4,201 @@
   var Calculator;
   Calculator = new (function () {
     var self = this,
+        evaluate;
+
+    /**
+     * Self-contained evaluate function
+     *
+     * @type {function}
+     */
+    evaluate = (function () {
+
       /**
-       * Self-contained evaluate function
-       * 
-       * @type {function}
+       * Tokenizes the equation so that the shunting yard algorithm can understand it
+       *
+       * @param {string} str String format of the equation to be tokenized
+       * @param {number} value Value to plug in for 'x'
+       * @returns {string} Infix Notation of the string, now ready for the shunting yard algorithm
        */
-      evaluate = (function () {
+      function tokenize(str, value) {
+        return str.replace(/(\w+\^\w+)/g, '($1)') // -x^2 => -(x^2)
+                    .replace(/(\-\((.+)\))/g, '-1*($2)') // -(5+4) => -1*(5+4)
+                      .replace(/(\-\w+)/g, '+$1') // 5-x+4 => 5 + -x + 4
+                        .replace(/(([\d\.]+)([a-zA-Z]+))/g, '$2*$3') // 5x => 5*x
+                          .replace(/x/g, value) // 5*x => 5*4
+                            .match(/(-\w+)|([\w\.]+)|([\(\)\+\^\*\/\-])/g);  // properly tokens the remaining string
+      }
 
-        /**
-         * Tokenizes the equation so that the shunting yard algorithm can understand it
-         * 
-         * @param {string} str String format of the equation to be tokenized
-         * @param {number} value Value to plug in for 'x'
-         * @returns {string} Infix Notation of the string, now ready for the shunting yard algorithm
-         */
-        function tokenize(str, value) {
-          return str.replace(/(\w+\^\w+)/g, '($1)') // -x^2 => -(x^2)
-                      .replace(/(\-\((.+)\))/g, '-1*($2)') // -(5+4) => -1*(5+4)
-                        .replace(/(\-\w+)/g, '+$1') // 5-x+4 => 5 + -x + 4
-                          .replace(/(([\d\.]+)([a-zA-Z]+))/g, '$2*$3') // 5x => 5*x
-                            .replace(/x/g, value) // 5*x => 5*4
-                              .match(/(-\w+)|([\w\.]+)|([\(\)\+\^\*\/\-])/g);  // properly tokens the remaining string
+      /**
+       * Checks if given token is a number
+       *
+       * @param {string} token String that might be a number
+       * @returns {boolean} True if the token is a number
+       */
+      function isNumeric(token) {
+        return !!(!isNaN(token) && isFinite(token));
+      }
+
+      /**
+       * Checks if given token is an alphabetic letter
+       *
+       * @param {string} token String that might be a letter
+       * @returns {boolean} True if token is a letter
+       */
+      function isLetter(token) {
+        return 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(token) !== -1;
+      }
+
+      /**
+       * Checks if given token is an arithmetic operation (+, -, /, *)
+       *
+       * @param {string} token String that might be an operation
+       * @returns {boolean} True if token is an operation
+       */
+      function isOperator(token) {
+        return '^*/+-'.indexOf(token) !== -1;
+      }
+
+      /**
+       * Performs a single operation on two numbers and returns the result
+       *
+       * @param {number} a First number
+       * @param {number} b Second number
+       * @param {string} operation Operation to be executed
+       * @returns {number} Result of the operation
+       */
+      function performOperation(a, b, operation) {
+        var ans = 0;
+        switch (operation) {
+        case '+':
+          ans = a + b;
+          break;
+        case '-':
+          ans = a - b;
+          break;
+        case '*':
+          ans = a * b;
+          break;
+        case '/':
+          ans = a / b;
+          break;
+        case '^':
+          ans = Math.pow(a, b);
+          break;
+        default:
+          break;
         }
+        return ans;
+      }
 
-        /**
-         * Checks if given token is a number
-         * 
-         * @param {string} token String that might be a number
-         * @returns {boolean} True if the token is a number
-         */
-        function isNumeric(token) {
-          return !!(!isNaN(token) && isFinite(token));
-        }
+      /**
+       * The Shunting Yard Algorithm converts infix notation to reverse-polish notation
+       *     that the the computer can solve.
+       *
+       * @param {string} infix Infix notation of the equation
+       * @returns {Array} Reverse Polish notation of the equation
+       */
+      function shuntingYard(infix) {
+        var stack = [],
+          queue = [],
+          i = 0,
+          token,
+          token2,
+          operators = {
+            '^': {
+              precedence: 4,
+              associativity: 'Right'
+            },
+            '/': {
+              precedence: 3,
+              associativity: 'Left'
+            },
+            '*': {
+              precedence: 3,
+              associativity: 'Left'
+            },
+            '+': {
+              precedence: 2,
+              associativity: 'Left'
+            },
+            '-': {
+              precedence: 2,
+              associativity: 'Left'
+            }
+          };
+        while (i < infix.length) {
+          token = infix[i];
 
-        /**
-         * Checks if given token is an alphabetic letter
-         * 
-         * @param {string} token String that might be a letter
-         * @returns {boolean} True if token is a letter
-         */
-        function isLetter(token) {
-          return 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(token) !== -1;
-        }
+          if (isNumeric(token)) {
+            queue.push(Number(token));
+          } else if (isLetter(token)) {
+            queue.push(token);
+          } else if (isOperator(token)) {
+            token2 = stack[stack.length - 1];
+            while (isOperator(token2)
+                && (operators[token].associativity === 'Left'
+                && (operators[token].precedence <= operators[token2].precedence
+                  || operators[token].associativity === 'Right')
+                && (operators[token].precedence < operators[token2].precedence))) {
 
-        /**
-         * Checks if given token is an arithmetic operation (+, -, /, *)
-         * 
-         * @param {string} token String that might be an operation
-         * @returns {boolean} True if token is an operation
-         */
-        function isOperator(token) {
-          return '^*/+-'.indexOf(token) !== -1;
-        }
-
-        /**
-         * Performs a single operation on two numbers and returns the result
-         * 
-         * @param {number} a First number
-         * @param {number} b Second number
-         * @param {string} operation Operation to be executed
-         * @returns {number} Result of the operation
-         */
-        function performOperation(a, b, operation) {
-          var ans = 0;
-          switch (operation) {
-          case '+':
-            ans = a + b;
-            break;
-          case '-':
-            ans = a - b;
-            break;
-          case '*':
-            ans = a * b;
-            break;
-          case '/':
-            ans = a / b;
-            break;
-          case '^':
-            ans = Math.pow(a, b);
-            break;
-          default:
-            break;
-          }
-          return ans;
-        }
-
-        /**
-         * The Shunting Yard Algorithm converts infix notation to reverse-polish notation
-         *     that the the computer can solve.
-         * 
-         * @param {string} infix Infix notation of the equation
-         * @returns {Array} Reverse Polish notation of the equation
-         */
-        function shuntingYard(infix) {
-          var stack = [],
-            queue = [],
-            i = 0,
-            token,
-            token2,
-            operators = {
-              '^': {
-                precedence: 4,
-                associativity: 'Right'
-              },
-              '/': {
-                precedence: 3,
-                associativity: 'Left'
-              },
-              '*': {
-                precedence: 3,
-                associativity: 'Left'
-              },
-              '+': {
-                precedence: 2,
-                associativity: 'Left'
-              },
-              '-': {
-                precedence: 2,
-                associativity: 'Left'
-              }
-            };
-          while (i < infix.length) {
-            token = infix[i];
-
-            if (isNumeric(token)) {
-              queue.push(Number(token));
-            } else if (isLetter(token)) {
-              queue.push(token);
-            } else if (isOperator(token)) {
+              queue.push(stack.pop());
               token2 = stack[stack.length - 1];
-              while (isOperator(token2)
-                  && (operators[token].associativity === 'Left'
-                  && (operators[token].precedence <= operators[token2].precedence
-                    || operators[token].associativity === 'Right')
-                  && (operators[token].precedence < operators[token2].precedence))) {
-
-                queue.push(stack.pop());
-                token2 = stack[stack.length - 1];
-              }
-              stack.push(token);
-            } else if (token === '(') {
-              stack.push(token);
-            } else if (token === ')') {
-              while (stack[stack.length - 1] !== '(') {
-                queue.push(stack.pop());
-              }
-              stack.pop();
             }
-
-            i += 1;
+            stack.push(token);
+          } else if (token === '(') {
+            stack.push(token);
+          } else if (token === ')') {
+            while (stack[stack.length - 1] !== '(') {
+              queue.push(stack.pop());
+            }
+            stack.pop();
           }
 
-          while (stack.length > 0) {
-            queue.push(stack.pop());
-          }
-
-          return queue;
+          i += 1;
         }
 
-        /**
-         * Evaluates the Reverse Polish equation piece-by-piece and returns the answer
-         *     to the entire equation.
-         * 
-         * @param {Array} equation Reverse Polish notation of the given equation to solve
-         * @returns {number} Answer to the entire equation
-         */
-        function solve(equation) {
-          var a, b, stack = [];
-
-          while (equation.length > 0) {
-            if (isNumeric(equation[0])) {
-              stack.push(equation.shift());
-            } else if (isOperator(equation[0])) {
-              b = stack.pop();
-              a = stack.pop();
-              stack.push(performOperation(a, b, equation.shift()));
-            }
-          }
-          return stack[0];
+        while (stack.length > 0) {
+          queue.push(stack.pop());
         }
 
-        /**
-         * Returns the answer to the user after solving the equation
-         * 
-         * @param {string} expression Infix notation of the equation to be solved
-         * @param {value} value Point to evaluate the expression at
-         * @returns {number} Answer to the equation
-         */
-        return function (expression, value) {
-          value = value || 0;
-          return solve(shuntingYard(tokenize(expression, value)));  // solve the reverse polish notation of the tokened infix expression
-        };
-      }());
+        return queue;
+      }
+
+      /**
+       * Evaluates the Reverse Polish equation piece-by-piece and returns the answer
+       *     to the entire equation.
+       *
+       * @param {Array} equation Reverse Polish notation of the given equation to solve
+       * @returns {number} Answer to the entire equation
+       */
+      function solve(equation) {
+        var a, b, stack = [];
+
+        while (equation.length > 0) {
+          if (isNumeric(equation[0])) {
+            stack.push(equation.shift());
+          } else if (isOperator(equation[0])) {
+            b = stack.pop();
+            a = stack.pop();
+            stack.push(performOperation(a, b, equation.shift()));
+          }
+        }
+        return stack[0];
+      }
+
+      /**
+       * Returns the answer to the user after solving the equation
+       *
+       * @param {string} expression Infix notation of the equation to be solved
+       * @param {value} value Point to evaluate the expression at
+       * @returns {number} Answer to the equation
+       */
+      return function (expression, value) {
+        value = value || 0;
+        return solve(shuntingYard(tokenize(expression, value)));  // solve the reverse polish notation of the tokened infix expression
+      };
+    }());
+
     /**
      * Truncates a decimal at 3 places
      * 

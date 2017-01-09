@@ -1,0 +1,144 @@
+body {
+    margin: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.bg {
+    background: linear-gradient(to right, #3c6def, #4a4fbe);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.tabs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: 100%;
+    overflow: hidden;
+}
+
+.tab-wrapper {
+    padding-left: 20px;
+    left: 0;
+    width: 10000px;
+    overflow: auto;
+    position: relative;
+    transition: left 0.4s ease-out;
+}
+
+.tab {
+    float: left;
+    margin: 0;
+    margin-left: 20px;
+    padding: 5px 10px;
+    background-color: transparent;
+    color: #5dd897;
+    border: 2px solid #5dd897;
+    border-top: none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    transition: padding-top 0.2s ease, padding-bottom 0.2s ease,
+    color 0.2s ease, background-color 0.2s ease;
+}
+
+.tab:hover {
+    cursor: pointer;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.tab:active, .tab:focus, .tab.active {
+    color: #4a4fbe;
+    background-color: #5dd897;
+    outline: none;
+    box-shadow: none;
+}
+
+.last-tabs, .next-tabs {
+    position: fixed;
+    top: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 30px;
+    color: #5dd897;
+    padding-left: 5px;
+    transition: padding-left 0.2s ease;
+    z-index: 100;
+}
+
+.last-tabs:hover, .next-tabs:hover {
+    cursor: pointer;
+    padding-left: 10px;
+}
+
+.last-tabs {
+    left: 0;
+    padding-bottom: 25px;
+    background: linear-gradient(to right, #3c6def 60%, rgba(0,0,0,0));
+}
+
+.next-tabs {
+    right: 0;
+    padding-top: 25px;
+    background: linear-gradient(to left, rgba(0,0,0,0), #4a4fbe 40%);
+    transform: rotate(180deg);
+}
+
+.buttons {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    overflow: hidden;
+    background-color: #1d1e22;
+}
+
+.clearfix::after {
+    display: block;
+    content: "";
+    clear: both;
+}
+
+.big-button {
+    float: left;
+    width: 25vw;
+    height: 25vw;
+    margin: 0;
+    padding: 0;
+    border: none;
+    max-height: 100px;
+    background-color: transparent;
+    color: #ffffff;
+    transition: color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: none;
+    position: relative;
+}
+
+.big-button:active, .big-button:focus {
+    color: #4a4fbe;
+    outline: none;
+    box-shadow: 0 0 20px 5px #37383C;
+    z-index: 100;
+}
+
+.big-button.tall {
+    height: 50vw;
+    max-height: 200px;
+    margin-top: -25vw;
+}
+
+@media screen and (min-width: 400px) {
+    .big-button.tall {
+        margin-top: -100px;
+    }
+}

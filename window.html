@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculo</title>
+
+    <link rel="stylesheet" href="css/flaticon.css" type="text/css" />
+    <link rel="stylesheet" href="css/calculo.css" type="text/css" />
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<section class="tabs">
+    <div id="last-tab" class="last-tabs hidden" data-action="last_tab">
+        <i class="icon-back"></i>
+    </div>
+    <div id="tabs" class="tab-wrapper">
+        <button class="tab" data-target="algebra" title="Solve a basic mathematical function">Algebra</button>
+        <button class="tab" data-target="derivative" title="Evaluate the derivative of a function at a given x coordinate">Derivative</button>
+        <button class="tab" data-target="integral" title="Calculate the integral of a function">Integral</button>
+        <button class="tab" data-target="newtons-method" title="Find the x-intercept of a function based on Newton's Method">Newton's Method</button>
+        <button class="tab" data-target="intersections" title="Find the x-coordinates of all intersections between two functions">Intersections</button>
+        <button class="tab" data-target="area-between" title="Find the area between two functions using their integrals">Area Between</button>
+    </div>
+    <div id="next-tab" class="next-tabs" data-action="next_tab">
+        <i class="icon-next"></i>
+    </div>
+</section>
+
+<section class="fields">
+    <div id="algebra">
+        <!--TODO: add display for text-->
+    </div>
+</section>
+
+<section class="buttons clearfix">
+
+    <button class="big-button" data-action="clear">C</button>
+    <button class="big-button" data-value="^">^</button>
+    <button class="big-button" data-value="/"><i class="icon-divide" aria-hidden="true"></i></button>
+    <button class="big-button" data-value="*"><i class="icon-times" aria-hidden="true"></i></button>
+
+    <button class="big-button" data-value="1">1</button>
+    <button class="big-button" data-value="2">2</button>
+    <button class="big-button" data-value="3">3</button>
+    <button class="big-button" data-value="-"><i class="icon-minus" aria-hidden="true"></i></button>
+
+    <button class="big-button" data-value="4">4</button>
+    <button class="big-button" data-value="5">5</button>
+    <button class="big-button" data-value="6">6</button>
+    <button class="big-button" data-value="+"><i class="icon-plus" aria-hidden="true"></i></button>
+
+    <button class="big-button" data-value="7">7</button>
+    <button class="big-button" data-value="8">8</button>
+    <button class="big-button" data-value="9" style="margin-right:20px">9</button>
+
+    <button class="big-button" data-value=".">.</button>
+    <button class="big-button" data-value="0">0</button>
+    <button class="big-button" data-action="backspace"><i class="icon-back" aria-hidden="true"></i></button>
+
+    <button class="big-button tall" data-action="equals"><i class="icon-equals" aria-hidden="true"></i></button>
+
+</section>
+
+<script src="js/calculo.js"></script>
+<script src="js/calculator.js"></script>
+</body>
+</html>

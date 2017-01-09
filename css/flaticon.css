@@ -1,0 +1,33 @@
+@font-face {
+    font-family: "Flaticon";
+    src: url("./flaticon/Flaticon.eot");
+    src: url("./flaticon/Flaticon.eot?#iefix") format("embedded-opentype"),
+    url("./flaticon/Flaticon.woff") format("woff"),
+    url("./flaticon/Flaticon.ttf") format("truetype"),
+    url("./flaticon/Flaticon.svg#Flaticon") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    @font-face {
+        font-family: "Flaticon";
+        src: url("./flaticon/Flaticon.svg#Flaticon") format("svg");
+    }
+}
+
+[class^="icon-"]:before, [class*=" icon-"]:before,
+[class^="icon-"]:after, [class*=" icon-"]:after {
+    font-family: Flaticon;
+    font-size: 1em;
+    font-style: normal;
+}
+
+.icon-plus:before       { content: "\f100"; }
+.icon-back:before       { content: "\f101"; }
+.icon-next:before       { content: "\f101"; }
+.icon-times:before      { content: "\f102"; }
+.icon-divide:before     { content: "\f103"; }
+.icon-equals:before     { content: "\f104"; }
+.icon-swap-sign:before  { content: "\f105"; }
+.icon-minus:before      { content: "\f106"; }
