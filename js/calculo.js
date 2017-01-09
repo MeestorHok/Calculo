@@ -1,8 +1,8 @@
 (function (window) {
   "use strict";
 
-  var Calculator;
-  Calculator = new (function () {
+  var Calculo;
+  Calculo = new (function () {
     var self = this,
         evaluate;
 
@@ -17,15 +17,15 @@
        * Tokenizes the equation so that the shunting yard algorithm can understand it
        *
        * @param {string} str String format of the equation to be tokenized
-       * @param {number} value Value to plug in for 'x'
-       * @returns {string} Infix Notation of the string, now ready for the shunting yard algorithm
+       * @param {string} value Value to plug in for 'x'
+       * @returns {Array|string} Infix Notation of the string, now ready for the shunting yard algorithm
        */
       function tokenize(str, value) {
         return str.replace(/(\w+\^\w+)/g, '($1)') // -x^2 => -(x^2)
                     .replace(/(\-\((.+)\))/g, '-1*($2)') // -(5+4) => -1*(5+4)
-                      .replace(/(\-\w+)/g, '+$1') // 5-x+4 => 5 + -x + 4
+                      .replace(/(?!^\-\w+)(\-\w+)/g, '+$1') // 5-x+4 => 5 + -x + 4
                         .replace(/(([\d\.]+)([a-zA-Z]+))/g, '$2*$3') // 5x => 5*x
-                          .replace(/x/g, value) // 5*x => 5*4
+                          .replace(/x/gi, value) // 5*x => 5*4
                             .match(/(-\w+)|([\w\.]+)|([\(\)\+\^\*\/\-])/g);  // properly tokens the remaining string
       }
 
@@ -195,7 +195,7 @@
        */
       return function (expression, value) {
         value = value || 0;
-        return solve(shuntingYard(tokenize(expression, value)));  // solve the reverse polish notation of the tokened infix expression
+        return solve(shuntingYard(tokenize(expression, value.toString())));  // solve the reverse polish notation of the tokened infix expression
       };
     }());
 
@@ -217,7 +217,7 @@
      * @returns {number} Answer to the equation
      */
     self.f = function (func, x) {
-      return evaluate(func, x);
+      return (func !== undefined && func !== null && func !== '') ? evaluate(func, x) : 0;
     };
 
     /**
@@ -339,5 +339,5 @@
     return self;
   })();
 
-  window.Calculator = Calculator;
+  window.Calculo = Calculo;
 })(window);

@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    font-family: sans-serif;
 }
 
 .hidden {
@@ -55,7 +56,7 @@ body {
     padding-bottom: 15px;
 }
 
-.tab:active, .tab:focus, .tab.active {
+.tab:active, .tab:focus, .tab[data-active="true"] {
     color: #4a4fbe;
     background-color: #5dd897;
     outline: none;
@@ -141,4 +142,50 @@ body {
     .big-button.tall {
         margin-top: -100px;
     }
+}
+
+.fields {
+    top: 75px;
+    position: relative;
+    left: 0;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.fields > div {
+    display: none;
+}
+
+.fields > div[data-active="true"] {
+    display: block;
+}
+
+.fields label {
+    color: #5dd897;
+    font-size: 1.1em;
+}
+
+.fields input {
+    background: transparent;
+    border: none;
+    color: white;
+    margin-top: 10px;
+    font-size: 2em;
+    text-align: center;
+}
+
+.fields input:focus {
+    outline: none;
+}
+
+.fields input.small {
+    width: 50px;
+    font-size: 1.5em;
+    margin-top: 30px;
+}
+
+.fields input.full {
+    width: 100%;
 }

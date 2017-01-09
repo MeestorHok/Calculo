@@ -11,7 +11,51 @@
      * @param {string} character to add to the function
      */
     self.put = function (character) {
-      console.log(character);
+      var containerId = document.querySelectorAll('div[data-active]')[0].getAttribute('id'),
+        equation = document.getElementById(containerId + '_function');
+
+      equation.value += character;
+    };
+
+    /**
+     * Evaluate a function and display the result.
+     */
+    self.equals = function () {
+      var container = document.querySelectorAll('div[data-active]')[0],
+        func = container.getAttribute('data-function'),
+        containerId = container.getAttribute('id'),
+        label = document.querySelectorAll('label[for="' + containerId + '_function"]')[0],
+        equation = document.getElementById(containerId + '_function'),
+        x = document.getElementById(containerId + '_x');
+
+      var fn = window.Calculo[func];
+      if (typeof fn === 'function') {
+        label.innerHTML = equation.value + '&nbsp;&nbsp;;&nbsp;&nbsp;x=' + (x.value || 0);
+        equation.value = window.Calculo.truncate(fn(equation.value.toString(), Number(x.value)));
+      }
+    };
+
+    /**
+     * Switch to a different tab.
+     *
+     * @param {HTMLElement} tabButton to switch to
+     */
+    self.switch_tab = function (tabButton) {
+      var otherTabs = document.querySelectorAll('[data-target]');
+      var tabContent = document.getElementById(tabButton.getAttribute('data-target'));
+
+      for (let i = 0; i < otherTabs.length; i++) {
+        let oTab = otherTabs[i];
+        let oTabContent = document.getElementById(oTab.getAttribute('data-target'));
+
+        if (oTab.getAttribute('data-active') || oTabContent.getAttribute('data-active')) {
+          oTab.removeAttribute('data-active');
+          oTabContent.removeAttribute('data-active');
+        }
+      }
+
+      tabButton.setAttribute('data-active', 'true');
+      tabContent.setAttribute('data-active', 'true');
     };
 
     /**
@@ -44,20 +88,28 @@
     self.init = function () {
       var valueButtons = document.querySelectorAll('[data-value]'),
           actionButtons = document.querySelectorAll('[data-action]'),
-          button;
+          tabs = document.querySelectorAll('[data-target]');
 
       for (let i = 0; i < valueButtons.length; i++) {
-        button = valueButtons[i];
-        button.onclick = () => self.put(this.getAttribute('data-value'));
+        let button = valueButtons[i];
+        let char = button.getAttribute('data-value');
+        button.onclick = () => self.put(char);
       }
 
       for (let i = 0; i < actionButtons.length; i++) {
-        button = actionButtons[i];
+        let button = actionButtons[i];
 
         let fn = self[button.getAttribute('data-action')];
         if (typeof fn === 'function')
           button.onclick = () => fn();
       }
+
+      for (let i = 0; i < tabs.length; i++) {
+        let button = tabs[i];
+        button.onclick = () => self.switch_tab(button);
+      }
+
+      window.onkeypress = (e) => { if (e.keyCode == 13) self.equals() };
     };
 
     return self;
